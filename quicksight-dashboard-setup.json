@@ -1,0 +1,76 @@
+{
+  "dashboardName": "Maternal Health Risk Analytics",
+  "description": "Comprehensive dashboard for maternal health risk assessment and monitoring",
+  "dataSource": {
+    "name": "maternal-health-data",
+    "type": "S3",
+    "s3Configuration": {
+      "bucketName": "your-maternal-health-bucket",
+      "key": "maternal-health-data/maternal health.csv",
+      "manifest": {
+        "fileFormat": "CSV",
+        "uploadSettings": {
+          "format": "CSV",
+          "startFromRow": 1,
+          "containsHeader": true,
+          "delimiter": ","
+        }
+      }
+    }
+  },
+  "dataSet": {
+    "name": "MaternalHealthDataSet",
+    "physicalTableMap": {
+      "maternal-health-table": {
+        "s3Source": {
+          "dataSourceArn": "arn:aws:quicksight:region:account:datasource/maternal-health-data",
+          "inputColumns": [
+            {"Name": "Age", "Type": "INTEGER"},
+            {"Name": "SystolicBP", "Type": "INTEGER"},
+            {"Name": "DiastolicBP", "Type": "INTEGER"},
+            {"Name": "BS", "Type": "DECIMAL"},
+            {"Name": "BodyTemp", "Type": "DECIMAL"},
+            {"Name": "HeartRate", "Type": "INTEGER"},
+            {"Name": "RiskLevel", "Type": "STRING"}
+          ]
+        }
+      }
+    },
+    "logicalTableMap": {
+      "maternal-health-logical": {
+        "alias": "MaternalHealthData",
+        "dataTransforms": [
+          {
+            "createColumnsOperation": {
+              "columns": [
+                {
+                  "columnName": "AgeGroup",
+                  "columnId": "age-group",
+                  "expression": "ifelse({Age} <= 25, \"20-25\", ifelse({Age} <= 30, \"26-30\", ifelse({Age} <= 35, \"31-35\", \"36+\")))"
+                },
+                {
+                  "columnName": "BPCategory",
+                  "columnId": "bp-category", 
+                  "expression": "ifelse({SystolicBP} >= 140 OR {DiastolicBP} >= 90, \"Hypertensive\", ifelse({SystolicBP} >= 120 OR {DiastolicBP} >= 80, \"Elevated\", \"Normal\"))"
+                },
+                {
+                  "columnName": "TempStatus",
+                  "columnId": "temp-status",
+                  "expression": "ifelse({BodyTemp} > 100.4, \"Fever\", ifelse({BodyTemp} < 97, \"Hypothermia\", \"Normal\"))"
+                },
+                {
+                  "columnName": "RiskScore",
+                  "columnId": "risk-score",
+                  "expression": "({SystolicBP} - 120) * 0.1 + ({DiastolicBP} - 80) * 0.15 + ({HeartRate} - 70) * 0.05 + ({BodyTemp} - 98.6) * 2 + ({BS} - 7) * 0.2"
+                }
+              ]
+            }
+          }
+        ],
+        "source": {
+          "physicalTableId": "maternal-health-table"
+        }
+      }
+    }
+  }
+}

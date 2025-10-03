@@ -1,0 +1,146 @@
+{
+  "templateName": "Maternal Health Risk Analytics Template",
+  "description": "Pre-built template for maternal health risk assessment dashboard",
+  "sheets": [
+    {
+      "name": "Executive Summary",
+      "visuals": [
+        {
+          "type": "KPI",
+          "title": "Total Patients",
+          "configuration": {
+            "field": "Age",
+            "aggregation": "COUNT",
+            "format": "number"
+          }
+        },
+        {
+          "type": "KPI", 
+          "title": "High Risk Patients",
+          "configuration": {
+            "field": "RiskLevel",
+            "aggregation": "COUNT",
+            "filter": "RiskLevel = 'high risk'",
+            "format": "number"
+          }
+        },
+        {
+          "type": "KPI",
+          "title": "Average Age", 
+          "configuration": {
+            "field": "Age",
+            "aggregation": "AVERAGE",
+            "format": "decimal_1"
+          }
+        },
+        {
+          "type": "PieChart",
+          "title": "Risk Level Distribution",
+          "configuration": {
+            "category": "RiskLevel",
+            "value": "COUNT(*)",
+            "colors": {
+              "high risk": "#FF4444",
+              "mid risk": "#FF8800", 
+              "low risk": "#44AA44"
+            }
+          }
+        },
+        {
+          "type": "BarChart",
+          "title": "Average Vital Signs by Risk Level",
+          "configuration": {
+            "xAxis": "RiskLevel",
+            "yAxis": ["AVG(SystolicBP)", "AVG(DiastolicBP)", "AVG(HeartRate)"],
+            "orientation": "vertical"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Risk Analysis",
+      "visuals": [
+        {
+          "type": "ScatterPlot",
+          "title": "Blood Pressure Analysis by Risk Level", 
+          "configuration": {
+            "xAxis": "SystolicBP",
+            "yAxis": "DiastolicBP", 
+            "color": "RiskLevel",
+            "size": "Age"
+          }
+        },
+        {
+          "type": "BoxPlot",
+          "title": "Age Distribution by Risk Level",
+          "configuration": {
+            "category": "RiskLevel",
+            "value": "Age"
+          }
+        },
+        {
+          "type": "Histogram", 
+          "title": "Heart Rate Distribution",
+          "configuration": {
+            "field": "HeartRate",
+            "bins": 10
+          }
+        },
+        {
+          "type": "Table",
+          "title": "Risk Factors Summary",
+          "configuration": {
+            "rows": ["RiskLevel"],
+            "values": [
+              "COUNT(*) as Patient_Count",
+              "AVG(Age) as Avg_Age", 
+              "AVG(SystolicBP) as Avg_Systolic",
+              "AVG(DiastolicBP) as Avg_Diastolic",
+              "AVG(BS) as Avg_BloodSugar",
+              "AVG(BodyTemp) as Avg_Temperature",
+              "AVG(HeartRate) as Avg_HeartRate"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "calculatedFields": [
+    {
+      "name": "AgeGroup",
+      "expression": "ifelse({Age} <= 25, '20-25', ifelse({Age} <= 30, '26-30', ifelse({Age} <= 35, '31-35', '36+')))"
+    },
+    {
+      "name": "BPCategory", 
+      "expression": "ifelse({SystolicBP} >= 140 OR {DiastolicBP} >= 90, 'Hypertensive', ifelse({SystolicBP} >= 120 OR {DiastolicBP} >= 80, 'Elevated', 'Normal'))"
+    },
+    {
+      "name": "TempStatus",
+      "expression": "ifelse({BodyTemp} > 100.4, 'Fever', ifelse({BodyTemp} < 97, 'Hypothermia', 'Normal'))"
+    },
+    {
+      "name": "RiskScore",
+      "expression": "({SystolicBP} - 120) * 0.1 + ({DiastolicBP} - 80) * 0.15 + ({HeartRate} - 70) * 0.05 + ({BodyTemp} - 98.6) * 2 + ({BS} - 7) * 0.2"
+    }
+  ],
+  "filters": [
+    {
+      "name": "AgeRange",
+      "type": "range",
+      "field": "Age", 
+      "min": 20,
+      "max": 40
+    },
+    {
+      "name": "RiskLevelFilter",
+      "type": "list",
+      "field": "RiskLevel",
+      "values": ["high risk", "mid risk", "low risk"]
+    }
+  ],
+  "colorPalette": {
+    "high risk": "#FF4444",
+    "mid risk": "#FF8800",
+    "low risk": "#44AA44"
+  }
+}
