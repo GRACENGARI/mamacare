@@ -1,7 +1,7 @@
-🤰 MamaCare - Maternal Health Risk Prediction System
-Overview
+#####🤰 MamaCare - Maternal Health Risk Prediction System
+###Overview
 MamaCare is an AI-powered maternal health risk prediction system that helps healthcare providers assess and classify maternal health risks into three categories: Low Risk, Mid Risk, and High Risk. The system uses machine learning to analyze clinical parameters and provide real-time risk assessments.
-🎯 Problem Statement
+##🎯 Problem Statement
 Maternal mortality remains a critical challenge in healthcare systems worldwide. Early identification of high-risk pregnancies can significantly improve outcomes through timely interventions. MamaCare addresses this by providing:
 
 Automated risk assessment based on clinical parameters
